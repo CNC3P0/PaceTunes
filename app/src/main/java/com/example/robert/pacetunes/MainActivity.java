@@ -73,8 +73,6 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_loadPL) {
-            // Handle the camera action
-        } else if (id == R.id.nav_createPL) {
 
         } else if (id == R.id.nav_playmode) {
 
