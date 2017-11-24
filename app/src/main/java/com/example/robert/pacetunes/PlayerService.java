@@ -8,6 +8,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -38,6 +39,8 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
         trackNumber=0;
         player = new MediaPlayer();
         initializePlayer();
+
+        Log.d("BLAH", "PlayerService created");
     }
 
     public void initializePlayer(){

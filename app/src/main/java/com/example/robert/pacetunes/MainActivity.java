@@ -12,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private PlayerService musicService;
+    private PlayerService musicServ;
     private Intent playIntent;
     private boolean musicBound = false;
 
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     @Override
@@ -52,6 +54,9 @@ public class MainActivity extends AppCompatActivity
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
             startService(playIntent);
         }
+
+        Log.d("BLAH", "onStart finished");
+
     }
 
     //connect to the service
@@ -61,16 +66,20 @@ public class MainActivity extends AppCompatActivity
         public void onServiceConnected(ComponentName name, IBinder service) {
             PlayerService.MusicBinder binder = (PlayerService.MusicBinder)service;
             //get service
-            musicService = binder.getService();
+            musicServ = binder.getService();
             //pass list
-            musicService.setList(songList);
+            musicServ.setList(songList);
             musicBound = true;
+
+            Log.d("BLAH", "onServiceConnected finished");
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             musicBound = false;
         }
+
+       // Log.d("SERVICE", "ServiveConnection started");
     };
 
     @Override
@@ -81,6 +90,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+        Log.d("BLAH", "onBackPressed");
     }
 
     @Override
@@ -127,6 +137,4 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
 }
