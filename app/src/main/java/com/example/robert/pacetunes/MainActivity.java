@@ -1,5 +1,6 @@
 package com.example.robert.pacetunes;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,6 +13,8 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    //private MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,10 +31,6 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        //TextView nextSong = (TextView) findViewById(R.id.upNext);
-        //nextSong.setMovementMethod(new ScrollingMovementMethod());
-        //nextSong.setText("this is sample text this is sample text this is sample text this is sample text this is sample text");
     }
 
     @Override
@@ -88,4 +87,6 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
 }
