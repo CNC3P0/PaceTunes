@@ -89,18 +89,28 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/button3"
-        android:layout_width="219dp"
-        android:layout_height="198dp"
+        android:id="@+id/BPMbutton"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/semicirclebutton"
+        android:background="@drawable/tophalfbutton"
         app:layout_constraintBottom_toTopOf="@+id/currentSong"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.25" />
+
+    <Button
+        android:id="@+id/rangeButton"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:background="@drawable/bottomhalfbutton"
+        app:layout_constraintEnd_toEndOf="@+id/BPMbutton"
+        app:layout_constraintStart_toStartOf="@+id/BPMbutton"
+        app:layout_constraintTop_toBottomOf="@+id/BPMbutton" />
 
 
 </android.support.constraint.ConstraintLayout>
