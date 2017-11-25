@@ -164,14 +164,20 @@ public class MainActivity extends AppCompatActivity
             toast("SPRINT");
         } else if (id == R.id.nav_help) {
             toast("HELP");
+            Intent intent = new Intent(this, Help.class);
+            startActivity(intent);
         } else if (id == R.id.nav_about) {
             toast("ABOUT");
+            Intent intent = new Intent(this, About.class);
+            startActivity(intent);
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 
 
 }
