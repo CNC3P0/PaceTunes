@@ -15,12 +15,15 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private PlayerService musicServ;
     private Intent playIntent;
@@ -44,6 +47,38 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        Button play = (Button) findViewById(R.id.playButton);
+        play.setOnClickListener(this); // calling onClick() method
+        Button next = (Button) findViewById(R.id.nextButton);
+        next.setOnClickListener(this);
+        Button previous = (Button) findViewById(R.id.previousButton);
+        previous.setOnClickListener(this);
+        Button range = (Button) findViewById(R.id.rangeButton);
+        range.setOnClickListener(this);
+    }
+
+    public void toast(String s) {
+        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.playButton:
+                toast ("PLAY");
+                break;
+            case R.id.nextButton:
+                toast("NEXT");
+                break;
+            case R.id.previousButton:
+                toast("PREVIOUS");
+                break;
+            case R.id.rangeButton:
+                toast("RANGE");
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -55,7 +90,7 @@ public class MainActivity extends AppCompatActivity
             startService(playIntent);
         }
 
-        Log.d("BLAH", "onStart finished");
+        Log.d("SERVICE", "onStart finished");
 
     }
 
@@ -71,7 +106,7 @@ public class MainActivity extends AppCompatActivity
             musicServ.setList(songList);
             musicBound = true;
 
-            Log.d("BLAH", "onServiceConnected finished");
+            Log.d("SERVICE", "onServiceConnected finished");
         }
 
         @Override
@@ -90,7 +125,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-        Log.d("BLAH", "onBackPressed");
+        Log.d("SERVICE", "onBackPressed");
     }
 
     @Override
@@ -122,19 +157,21 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_loadPL) {
-
-        } else if (id == R.id.nav_playmode) {
-
+            toast("LOAD");
+        } else if (id == R.id.nav_loopmode) {
+            toast("LOOP");
         } else if (id == R.id.nav_sprintmode) {
-
+            toast("SPRINT");
         } else if (id == R.id.nav_help) {
-
+            toast("HELP");
         } else if (id == R.id.nav_about) {
-
+            toast("ABOUT");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
 }
