@@ -67,7 +67,7 @@ public class LoadPlaylist extends AppCompatActivity {
             // open music player or load song here
                 String songPath = (String)parent.getItemAtPosition(position);
                 //Toast.makeText(getApplicationContext(), songPath, Toast.LENGTH_SHORT).show();
-                playSongHere.playSong(songPath);
+                //playSongHere.playSong(songPath);
             }
         });
     }

@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import com.example.robert.pacetunes.PlayerService.MusicBinder;
 
 import java.util.ArrayList;
 
@@ -99,7 +100,7 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            PlayerService.MusicBinder binder = (PlayerService.MusicBinder)service;
+            MusicBinder binder = (MusicBinder)service;
             //get service
             musicServ = binder.getService();
             //pass list

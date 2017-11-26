@@ -5,6 +5,7 @@ package com.example.robert.pacetunes;
  */
 
 public class Song {
+    private long id;
     private String title;
     private String artist;
     private String albumTitle;
@@ -17,7 +18,12 @@ public class Song {
         filePath = path;
     }
 
-    public String getFilePath() {
-        return filePath;
-    }
+    public long getId() {return id;}
+
+    public String getTitle() { return title; }
+
+    public String getArtist() {return artist; }
+
+    public String getFilePath() { return filePath; }
+
 }
