@@ -89,10 +89,8 @@ public class MainActivity extends AppCompatActivity
             playIntent = new Intent(this, PlayerService.class);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
             startService(playIntent);
+            Log.d("BLAH", "returned to onStart from startService");
         }
-
-        Log.d("BLAH", "onStart finished");
-
     }
 
     //connect to the service
@@ -107,15 +105,14 @@ public class MainActivity extends AppCompatActivity
             musicServ.setList(songList);
             musicBound = true;
 
-            Log.d("SERVICE", "onServiceConnected finished");
+            Log.d("BLAH", "Service Connected");
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             musicBound = false;
+            Log.d("BLAH", "Service Disconnected");
         }
-
-       // Log.d("BLAH", "ServiveConnection started");
     };
 
     @Override
@@ -126,7 +123,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-        Log.d("BLAH", "onBackPressed");
+        //Log.d("BLAH", "onBackPressed");
     }
 
     @Override
@@ -181,6 +178,9 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-
+    public void listItemSelected(View view){
+        musicServ.setSong(Integer.parseInt(view.getTag().toString()));
+        musicServ.playSong();
+    }
 
 }
