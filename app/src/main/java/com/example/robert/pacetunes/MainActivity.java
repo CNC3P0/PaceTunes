@@ -1,32 +1,29 @@
 package com.example.robert.pacetunes;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
+import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-import com.example.robert.pacetunes.PlayerService.MusicBinder;
 
 import java.util.ArrayList;
+
+//import com.example.robert.pacetunes.PlayerService.MusicBinder;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
-    private PlayerService musicServ;
+    //private PlayerService musicServ;
     private Intent playIntent;
     private boolean musicBound = false;
 
@@ -56,6 +53,10 @@ public class MainActivity extends AppCompatActivity
         previous.setOnClickListener(this);
         Button range = (Button) findViewById(R.id.rangeButton);
         range.setOnClickListener(this);
+
+        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.heal2);
+        mediaPlayer.start();
+
     }
 
     public void toast(String s) {
@@ -85,15 +86,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        if (playIntent == null) {
+        /*if (playIntent == null) {
             playIntent = new Intent(this, PlayerService.class);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
             startService(playIntent);
             Log.d("BLAH", "returned to onStart from startService");
-        }
+        }*/
     }
 
-    //connect to the service
+    /*/connect to the service
     private ServiceConnection musicConnection = new ServiceConnection(){
 
         @Override
@@ -113,7 +114,7 @@ public class MainActivity extends AppCompatActivity
             musicBound = false;
             Log.d("BLAH", "Service Disconnected");
         }
-    };
+    };*/
 
     @Override
     public void onBackPressed() {
@@ -178,9 +179,9 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void listItemSelected(View view){
+    /*public void listItemSelected(View view){
         musicServ.setSong(Integer.parseInt(view.getTag().toString()));
         musicServ.playSong();
-    }
+    }*/
 
 }

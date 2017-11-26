@@ -29,7 +29,7 @@ public class LoadPlaylist extends AppCompatActivity {
 
     ArrayAdapter<String> adapter;
 
-    PlayerService playSongHere = new PlayerService();
+    //PlayerService playSongHere = new PlayerService();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
