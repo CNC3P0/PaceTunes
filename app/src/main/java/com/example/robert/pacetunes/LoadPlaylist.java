@@ -29,6 +29,8 @@ public class LoadPlaylist extends AppCompatActivity {
 
     ArrayAdapter<String> adapter;
 
+    PlayerService playSongHere = new PlayerService();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +64,10 @@ public class LoadPlaylist extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+            // open music player or load song here
+                String songPath = (String)parent.getItemAtPosition(position);
+                //Toast.makeText(getApplicationContext(), songPath, Toast.LENGTH_SHORT).show();
+                playSongHere.playSong(songPath);
             }
         });
     }
@@ -75,11 +80,13 @@ public class LoadPlaylist extends AppCompatActivity {
         if (songCursor != null && songCursor.moveToFirst()) {
             int songTitle = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int songArtist = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int songLocation = songCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
 
             do {
                 String currentTitle = songCursor.getString(songTitle);
                 String currentArtist = songCursor.getString(songArtist);
-                arrayList.add(currentTitle + "\n" + currentArtist);
+                String currentLocation = songCursor.getString(songLocation);
+                arrayList.add(currentLocation);
             }
             while (songCursor.moveToNext());
         }

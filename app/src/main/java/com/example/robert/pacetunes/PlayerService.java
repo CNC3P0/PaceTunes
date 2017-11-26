@@ -93,10 +93,10 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
 
     }
 
-    public void playSong() {
-        player.reset();
-        Song playSong = playList.get(trackNumber);
-        String currentSong = playSong.getFilePath();
+    public void playSong(String filepath) {
+        //player.reset();
+        //Song playSong = playList.get(trackNumber);
+        //String currentSong = playSong.getFilePath();
     }
 
 }
