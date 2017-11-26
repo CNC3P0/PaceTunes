@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity
             startService(playIntent);
         }
 
-        Log.d("SERVICE", "onStart finished");
+        Log.d("BLAH", "onStart finished");
 
     }
 
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity
             musicBound = false;
         }
 
-       // Log.d("SERVICE", "ServiveConnection started");
+       // Log.d("BLAH", "ServiveConnection started");
     };
 
     @Override
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-        Log.d("SERVICE", "onBackPressed");
+        Log.d("BLAH", "onBackPressed");
     }
 
     @Override
