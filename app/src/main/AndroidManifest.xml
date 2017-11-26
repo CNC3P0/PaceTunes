@@ -3,6 +3,7 @@
     package="com.example.robert.pacetunes">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -28,11 +29,11 @@
 
         <activity
             android:name=".About"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".Help"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity android:name=".LoadPlaylist"></activity>
     </application>
 
 </manifest>

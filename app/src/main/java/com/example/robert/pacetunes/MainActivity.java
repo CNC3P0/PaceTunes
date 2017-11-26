@@ -158,6 +158,8 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_loadPL) {
             toast("LOAD");
+            Intent intent = new Intent(this, LoadPlaylist.class);
+            startActivity(intent);
         } else if (id == R.id.nav_loopmode) {
             toast("LOOP");
         } else if (id == R.id.nav_sprintmode) {
