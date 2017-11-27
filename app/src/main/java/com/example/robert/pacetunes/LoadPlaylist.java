@@ -54,23 +54,6 @@ public class LoadPlaylist extends AppCompatActivity {
         }
     }
 
-    public void doStuff() {
-        listView = (ListView) findViewById(R.id.playlistView);
-        arrayList = new ArrayList<>();
-        getMusic();
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayList);
-        listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            // open music player or load song here
-                String songPath = (String)parent.getItemAtPosition(position);
-                //Toast.makeText(getApplicationContext(), songPath, Toast.LENGTH_SHORT).show();
-                //playSongHere.playSong(songPath);
-            }
-        });
-    }
 
     public void getMusic() {
         ContentResolver contentResolver = getContentResolver();
@@ -92,6 +75,42 @@ public class LoadPlaylist extends AppCompatActivity {
         }
     }
 
+    public void getPlaylists() {
+        ContentResolver contentResolver = getContentResolver();
+        Uri playlistUri = MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
+        Cursor playlistCursor = contentResolver.query(playlistUri, null, null, null, null);
+
+        if (playlistCursor != null && playlistCursor.moveToFirst()) {
+            int playlistName = playlistCursor.getColumnIndex(MediaStore.Audio.Playlists.NAME);
+            int playlistLocation = playlistCursor.getColumnIndex(MediaStore.Audio.Playlists.DATA);
+
+            do {
+                String currentName = playlistCursor.getString(playlistName);
+                //String currentLocation = playlistCursor.getString(playlistLocation);
+                arrayList.add(currentName);
+            }
+            while (playlistCursor.moveToNext());
+        }
+    }
+
+    public void doStuff() {
+        listView = findViewById(R.id.playlistView);
+        arrayList = new ArrayList<>();
+        //getMusic();
+        getPlaylists();
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayList);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // open music player or load song here
+                String songPath = (String)parent.getItemAtPosition(position);
+                //Toast.makeText(getApplicationContext(), songPath, Toast.LENGTH_SHORT).show();
+                //playSongHere.playSong(songPath);
+            }
+        });
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {

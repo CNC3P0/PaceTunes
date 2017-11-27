@@ -5,25 +5,35 @@ package com.example.robert.pacetunes;
  */
 
 public class Song {
-    private long id;
+    private String data;
     private String title;
     private String artist;
-    private String albumTitle;
+    private String album;
     private String duration;
     private String filePath;
     private String codec;
     private int bpm;
 
-    public Song(String path){
-        filePath = path;
+    public Song(String data, String title, String album, String artist) {
+        this.data = data;
+        this.title = title;
+        this.album = album;
+        this.artist = artist;
     }
 
-    public long getId() {return id;}
+    public String getData() {return data;}
+
+    public void setData(String data) {this.data = data;}
 
     public String getTitle() { return title; }
 
+    public void setTitle(String title) {this.title = title;}
+
+    public String getAlbum() {return album;}
+
+    public void setAlbum() {this.album = album;}
+
     public String getArtist() {return artist; }
 
-    public String getFilePath() { return filePath; }
-
+    public void setArtist() {this.artist = artist;}
 }

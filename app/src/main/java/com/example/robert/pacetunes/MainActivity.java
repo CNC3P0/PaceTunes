@@ -1,13 +1,16 @@
 package com.example.robert.pacetunes;
 
+import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
-import android.media.session.PlaybackState;
+import android.content.ServiceConnection;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.RemoteException;
+import android.os.IBinder;
+import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
-import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -28,12 +31,15 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     //private PlayerService musicServ;
-    private Intent playIntent;
-    private boolean musicBound = false;
+    //private Intent playIntent;
+    //private boolean musicBound = false;
 
-    private ArrayList<Song> songList;
+    private MediaPlayerService player;
+    boolean serviceBound = false;
 
-    // from tutorial
+    ArrayList<Song> songList;
+
+    /*/ from tutorial
     private static final int STATE_PAUSED = 0;
     private static final int STATE_PLAYING = 1;
     private int mCurrentState = STATE_PAUSED;
@@ -78,7 +84,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         }
-    };
+    };*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +113,7 @@ public class MainActivity extends AppCompatActivity
         Button range = (Button) findViewById(R.id.rangeButton);
         range.setOnClickListener(this);
 
+        playAudio("https://upload.wikimedia.org/wikipedia/commons/6/6c/Grieg_Lyric_Pieces_Kobold.ogg");
         //MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.heal2);
         //mediaPlayer.start();
 
@@ -121,15 +128,6 @@ public class MainActivity extends AppCompatActivity
         switch (v.getId()) {
             case R.id.playButton:
                 toast ("PLAY");
-                if( mCurrentState == STATE_PAUSED ) {
-                    mMediaControllerCompat.getTransportControls().play();
-                    mCurrentState = STATE_PLAYING;
-                } else {
-                    if( mMediaControllerCompat.getPlaybackState().getState() == PlaybackState.STATE_PLAYING ) {
-                        mMediaControllerCompat.getTransportControls().pause();
-                    }
-                    mCurrentState = STATE_PAUSED;
-                }
                 break;
             case R.id.nextButton:
                 toast("NEXT");
@@ -156,27 +154,36 @@ public class MainActivity extends AppCompatActivity
         }*/
     }
 
-    /*/connect to the service
-    private ServiceConnection musicConnection = new ServiceConnection(){
-
+    //Binding this Client to the AudioPlayer Service
+    private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            MusicBinder binder = (MusicBinder)service;
-            //get service
-            musicServ = binder.getService();
-            //pass list
-            musicServ.setList(songList);
-            musicBound = true;
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            MediaPlayerService.LocalBinder binder = (MediaPlayerService.LocalBinder) service;
+            player = binder.getService();
+            serviceBound = true;
 
-            Log.d("BLAH", "Service Connected");
+            Toast.makeText(MainActivity.this, "Service Bound", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            musicBound = false;
-            Log.d("BLAH", "Service Disconnected");
+            serviceBound = false;
         }
-    };*/
+    };
+
+    private void playAudio(String media) {
+        //Check is service is active
+        if (!serviceBound) {
+            Intent playerIntent = new Intent(this, MediaPlayerService.class);
+            playerIntent.putExtra("media", media);
+            startService(playerIntent);
+            bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        } else {
+            //Service is active
+            //Send media with BroadcastReceiver
+        }
+    }
 
     @Override
     public void onBackPressed() {
@@ -241,11 +248,54 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putBoolean("ServiceState", serviceBound);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        serviceBound = savedInstanceState.getBoolean("ServiceState");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (serviceBound) {
+            unbindService(serviceConnection);
+            //service is active
+            player.stopSelf();
+        }
+    }
+
     /*public void listItemSelected(View view){
         musicServ.setSong(Integer.parseInt(view.getTag().toString()));
         musicServ.playSong();
     }*/
 
+    private void loadAudio() {
+        ContentResolver contentResolver = getContentResolver();
 
+        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0";
+        String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
+        Cursor cursor = contentResolver.query(uri, null, selection, null, sortOrder);
+
+        if (cursor != null && cursor.getCount() > 0) {
+            songList = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                String data = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+                String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
+                String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
+                String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
+
+                // Save to audioList
+                songList.add(new Song(data, title, album, artist));
+            }
+        }
+        cursor.close();
+    }
 
 }
