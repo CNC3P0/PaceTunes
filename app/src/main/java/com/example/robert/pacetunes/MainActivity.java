@@ -1,9 +1,13 @@
 package com.example.robert.pacetunes;
 
 import android.content.Intent;
-import android.media.MediaPlayer;
+import android.media.session.PlaybackState;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.design.widget.NavigationView;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -29,12 +33,61 @@ public class MainActivity extends AppCompatActivity
 
     private ArrayList<Song> songList;
 
+    // from tutorial
+    private static final int STATE_PAUSED = 0;
+    private static final int STATE_PLAYING = 1;
+    private int mCurrentState = STATE_PAUSED;
+    private MediaBrowserCompat mMediaBrowserCompat;
+    private MediaControllerCompat mMediaControllerCompat;
+    private Button mPlayPauseToggleButton;
+
+    private MediaBrowserCompat.ConnectionCallback mMediaBrowserCompatConnectionCallback = new MediaBrowserCompat.ConnectionCallback() {
+
+        @Override
+        public void onConnected() {
+            super.onConnected();
+            try {
+                mMediaControllerCompat = new MediaControllerCompat(MainActivity.this, mMediaBrowserCompat.getSessionToken());
+                mMediaControllerCompat.registerCallback(mMediaControllerCompatCallback);
+                mMediaControllerCompat.setMediaController(MainActivity.this, mMediaControllerCompat);
+                mMediaControllerCompat.getTransportControls().playFromMediaId(String.valueOf(R.raw.heal2), null);
+
+            } catch( RemoteException e ) {
+
+            }
+        }
+    };
+
+    private MediaControllerCompat.Callback mMediaControllerCompatCallback = new MediaControllerCompat.Callback() {
+
+        @Override
+        public void onPlaybackStateChanged(PlaybackStateCompat state) {
+            super.onPlaybackStateChanged(state);
+            if( state == null ) {
+                return;
+            }
+
+            switch( state.getState() ) {
+                case PlaybackStateCompat.STATE_PLAYING: {
+                    mCurrentState = STATE_PLAYING;
+                    break;
+                }
+                case PlaybackStateCompat.STATE_PAUSED: {
+                    mCurrentState = STATE_PAUSED;
+                    break;
+                }
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -54,8 +107,8 @@ public class MainActivity extends AppCompatActivity
         Button range = (Button) findViewById(R.id.rangeButton);
         range.setOnClickListener(this);
 
-        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.heal2);
-        mediaPlayer.start();
+        //MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.heal2);
+        //mediaPlayer.start();
 
     }
 
@@ -68,6 +121,15 @@ public class MainActivity extends AppCompatActivity
         switch (v.getId()) {
             case R.id.playButton:
                 toast ("PLAY");
+                if( mCurrentState == STATE_PAUSED ) {
+                    mMediaControllerCompat.getTransportControls().play();
+                    mCurrentState = STATE_PLAYING;
+                } else {
+                    if( mMediaControllerCompat.getPlaybackState().getState() == PlaybackState.STATE_PLAYING ) {
+                        mMediaControllerCompat.getTransportControls().pause();
+                    }
+                    mCurrentState = STATE_PAUSED;
+                }
                 break;
             case R.id.nextButton:
                 toast("NEXT");
@@ -183,5 +245,7 @@ public class MainActivity extends AppCompatActivity
         musicServ.setSong(Integer.parseInt(view.getTag().toString()));
         musicServ.playSong();
     }*/
+
+
 
 }
