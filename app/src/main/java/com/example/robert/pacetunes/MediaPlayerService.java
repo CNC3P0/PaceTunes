@@ -1,6 +1,5 @@
 package com.example.robert.pacetunes;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -16,18 +15,16 @@ import android.media.session.MediaSessionManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v7.app.NotificationCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
-import static android.app.NotificationChannel.DEFAULT_CHANNEL_ID;
 
 public class MediaPlayerService extends Service implements MediaPlayer.OnCompletionListener,
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener,
@@ -527,16 +524,17 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 R.drawable.image); //replace with your own image
 
         // Create a new Notification
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, DEFAULT_CHANNEL_ID);
-                notificationBuilder.setShowWhen(false)
+        NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                // Hide the timestamp
+                .setShowWhen(false)
                 // Set the Notification style
-                .setStyle(new Notification.MediaStyle()
+                .setStyle(new NotificationCompat.MediaStyle()
                         // Attach our MediaSession token
                         .setMediaSession(mediaSession.getSessionToken())
-                        // Show our playback controls in the compact notification view.
+                        // Show our playback controls in the compat view
                         .setShowActionsInCompactView(0, 1, 2))
                 // Set the Notification color
-                .setColor(getResources().getColor(R.color.colorPrimary))
+                .setColor(getResources().getColor(R.color.colorAccent))
                 // Set the large and small icons
                 .setLargeIcon(largeIcon)
                 .setSmallIcon(android.R.drawable.stat_sys_headset)

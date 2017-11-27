@@ -7,11 +7,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -26,11 +24,13 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import static android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
+
 //import com.example.robert.pacetunes.PlayerService.MusicBinder;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+        implements OnNavigationItemSelectedListener, View.OnClickListener {
 
     //private PlayerService musicServ;
     //private Intent playIntent;
@@ -97,8 +97,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -124,8 +122,8 @@ public class MainActivity extends AppCompatActivity
 
         loadAudio();
         //play the first audio in the ArrayList
-        playAudio(songList.get(0).getData());
-
+        //playAudio(songList.get(0).getData());
+        playAudio(2);
     }
 
     public void toast(String s) {
@@ -181,7 +179,6 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void playAudio(int audioIndex) {
         //Check is service is active
         if (!serviceBound) {
@@ -191,7 +188,7 @@ public class MainActivity extends AppCompatActivity
             storage.storeAudioIndex(audioIndex);
 
             Intent playerIntent = new Intent(this, MediaPlayerService.class);
-            startForegroundService(playerIntent);
+            startService(playerIntent);
             bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
         } else {
             //Store the new audioIndex to SharedPreferences
