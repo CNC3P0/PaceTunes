@@ -7,9 +7,11 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -179,6 +181,7 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void playAudio(int audioIndex) {
         //Check is service is active
         if (!serviceBound) {
@@ -188,7 +191,7 @@ public class MainActivity extends AppCompatActivity
             storage.storeAudioIndex(audioIndex);
 
             Intent playerIntent = new Intent(this, MediaPlayerService.class);
-            startService(playerIntent);
+            startForegroundService(playerIntent);
             bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
         } else {
             //Store the new audioIndex to SharedPreferences
