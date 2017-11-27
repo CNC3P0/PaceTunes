@@ -1,10 +1,12 @@
 package com.example.robert.pacetunes;
 
+import java.io.Serializable;
+
 /**
  * Created by Robert on 11/23/2017.
  */
 
-public class Song {
+public class Song implements Serializable {
     private String data;
     private String title;
     private String artist;

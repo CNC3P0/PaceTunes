@@ -1,16 +1,21 @@
 package com.example.robert.pacetunes;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,74 +26,29 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import static android.os.Build.VERSION.SDK_INT;
 import static android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 
-//import com.example.robert.pacetunes.PlayerService.MusicBinder;
 
 
 public class MainActivity extends AppCompatActivity
         implements OnNavigationItemSelectedListener, View.OnClickListener {
 
-    //private PlayerService musicServ;
-    //private Intent playIntent;
-    //private boolean musicBound = false;
-
+    public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
     public static final String Broadcast_PLAY_NEW_AUDIO = "com.example.robert.pacetunes.PlayNewAudio";
 
     private MediaPlayerService player;
     boolean serviceBound = false;
-
     ArrayList<Song> songList;
+    private int playButton;
 
-    /*/ from tutorial
-    private static final int STATE_PAUSED = 0;
-    private static final int STATE_PLAYING = 1;
-    private int mCurrentState = STATE_PAUSED;
-    private MediaBrowserCompat mMediaBrowserCompat;
-    private MediaControllerCompat mMediaControllerCompat;
-    private Button mPlayPauseToggleButton;
-
-    private MediaBrowserCompat.ConnectionCallback mMediaBrowserCompatConnectionCallback = new MediaBrowserCompat.ConnectionCallback() {
-
-        @Override
-        public void onConnected() {
-            super.onConnected();
-            try {
-                mMediaControllerCompat = new MediaControllerCompat(MainActivity.this, mMediaBrowserCompat.getSessionToken());
-                mMediaControllerCompat.registerCallback(mMediaControllerCompatCallback);
-                mMediaControllerCompat.setMediaController(MainActivity.this, mMediaControllerCompat);
-                mMediaControllerCompat.getTransportControls().playFromMediaId(String.valueOf(R.raw.heal2), null);
-
-            } catch( RemoteException e ) {
-
-            }
-        }
-    };
-
-    private MediaControllerCompat.Callback mMediaControllerCompatCallback = new MediaControllerCompat.Callback() {
-
-        @Override
-        public void onPlaybackStateChanged(PlaybackStateCompat state) {
-            super.onPlaybackStateChanged(state);
-            if( state == null ) {
-                return;
-            }
-
-            switch( state.getState() ) {
-                case PlaybackStateCompat.STATE_PLAYING: {
-                    mCurrentState = STATE_PLAYING;
-                    break;
-                }
-                case PlaybackStateCompat.STATE_PAUSED: {
-                    mCurrentState = STATE_PAUSED;
-                    break;
-                }
-            }
-        }
-    };*/
+    //ImageView collapsingImageView;
+    //int imageIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +56,11 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //collapsingImageView = (ImageView) findViewById(R.id.collapsingImageView);
+        //loadCollapsingImage(imageIndex);
+
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -120,24 +85,61 @@ public class MainActivity extends AppCompatActivity
 
         //playAudio("https://upload.wikimedia.org/wikipedia/commons/6/6c/Grieg_Lyric_Pieces_Kobold.ogg");
 
-        loadAudio();
+        //if (checkAndRequestPermissions()) {
+            loadAudio();
+        //}
         //play the first audio in the ArrayList
         //playAudio(songList.get(0).getData());
         playAudio(2);
     }
 
+
+    // Causes app to crash. Why?
+    private boolean checkAndRequestPermissions() {
+        if (SDK_INT >= Build.VERSION_CODES.M) {
+            int permissionReadPhoneState = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
+            int permissionStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+            List<String> listPermissionsNeeded = new ArrayList<>();
+
+            if (permissionReadPhoneState != PackageManager.PERMISSION_GRANTED) {
+                listPermissionsNeeded.add(Manifest.permission.READ_PHONE_STATE);
+            }
+
+            if (permissionStorage != PackageManager.PERMISSION_GRANTED) {
+                listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+            }
+
+            if (!listPermissionsNeeded.isEmpty()) {
+                ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_ID_MULTIPLE_PERMISSIONS);
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void toast(String s) {
-        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onClick(View v) {
+        ToggleButton playpause = (ToggleButton) findViewById(R.id.playButton);
         switch (v.getId()) {
             case R.id.playButton:
-                toast ("PLAY");
+                if (playpause.isChecked()) {
+                    toast("PLAYING");
+
+                }
+                else{
+                    toast("PAUSING");
+
+                }
                 break;
             case R.id.nextButton:
                 toast("NEXT");
+
                 break;
             case R.id.previousButton:
                 toast("PREVIOUS");
