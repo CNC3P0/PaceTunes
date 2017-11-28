@@ -54,27 +54,6 @@ public class LoadPlaylist extends AppCompatActivity {
         }
     }
 
-
-    public void getMusic() {
-        ContentResolver contentResolver = getContentResolver();
-        Uri songUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor songCursor = contentResolver.query(songUri, null, null, null, null);
-
-        if (songCursor != null && songCursor.moveToFirst()) {
-            int songTitle = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int songArtist = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-            int songLocation = songCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
-
-            do {
-                String currentTitle = songCursor.getString(songTitle);
-                String currentArtist = songCursor.getString(songArtist);
-                String currentLocation = songCursor.getString(songLocation);
-                arrayList.add(currentLocation);
-            }
-            while (songCursor.moveToNext());
-        }
-    }
-
     public void getPlaylists() {
         ContentResolver contentResolver = getContentResolver();
         Uri playlistUri = MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
@@ -111,6 +90,7 @@ public class LoadPlaylist extends AppCompatActivity {
             }
         });
     }
+    
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {

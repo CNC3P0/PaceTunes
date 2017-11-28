@@ -91,7 +91,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/BPMbutton"
+        android:id="@+id/bpmButton"
         android:layout_width="200dp"
         android:layout_height="100dp"
         android:layout_marginBottom="108dp"
@@ -109,9 +109,23 @@
         android:layout_width="200dp"
         android:layout_height="100dp"
         android:background="@drawable/bottomhalfbutton"
-        app:layout_constraintEnd_toEndOf="@+id/BPMbutton"
-        app:layout_constraintStart_toStartOf="@+id/BPMbutton"
-        app:layout_constraintTop_toBottomOf="@+id/BPMbutton" />
+        android:gravity="top|center_horizontal"
+        android:text="80-100 BPM"
+        android:textColor="@color/colorPrimary"
+        android:textSize="36dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/bpmButton"
+        app:layout_constraintStart_toStartOf="@+id/bpmButton"
+        app:layout_constraintTop_toBottomOf="@+id/bpmButton" />
 
+    <EditText
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:backgroundTint="@android:color/transparent"
+        android:cursorVisible="false"
+        android:editable="true"
+        app:layout_constraintEnd_toEndOf="@+id/rangeButton"
+        app:layout_constraintStart_toStartOf="@+id/rangeButton"
+        app:layout_constraintTop_toTopOf="@+id/rangeButton" />
 
 </android.support.constraint.ConstraintLayout>

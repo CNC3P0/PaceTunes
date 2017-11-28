@@ -1,21 +1,9 @@
 package com.example.robert.pacetunes;
 
-import android.Manifest;
-import android.content.ComponentName;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
+import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -25,16 +13,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import static android.os.Build.VERSION.SDK_INT;
 import static android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
-
-
 
 public class MainActivity extends AppCompatActivity
         implements OnNavigationItemSelectedListener, View.OnClickListener {
@@ -42,13 +27,16 @@ public class MainActivity extends AppCompatActivity
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
     public static final String Broadcast_PLAY_NEW_AUDIO = "com.example.robert.pacetunes.PlayNewAudio";
 
-    private MediaPlayerService player;
-    boolean serviceBound = false;
-    ArrayList<Song> songList;
-    private int playButton;
+    MediaPlayer mPlayer;
 
-    //ImageView collapsingImageView;
-    //int imageIndex = 0;
+    boolean playState = false;
+    ArrayList<Song> currentPlaylist;
+    Song currentSong;
+    boolean loopState;
+    boolean sprintState;
+    boolean coachState;
+    int[] targetRange = {80,100};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +44,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        //collapsingImageView = (ImageView) findViewById(R.id.collapsingImageView);
-        //loadCollapsingImage(imageIndex);
-
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -80,76 +63,11 @@ public class MainActivity extends AppCompatActivity
         Button range = (Button) findViewById(R.id.rangeButton);
         range.setOnClickListener(this);
 
-        //MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.heal2);
-        //mediaPlayer.start();
-
-        //playAudio("https://upload.wikimedia.org/wikipedia/commons/6/6c/Grieg_Lyric_Pieces_Kobold.ogg");
-
-        //if (checkAndRequestPermissions()) {
-            loadAudio();
-        //}
-        //play the first audio in the ArrayList
-        //playAudio(songList.get(0).getData());
-        playAudio(2);
-    }
-
-
-    // Causes app to crash. Why?
-    private boolean checkAndRequestPermissions() {
-        if (SDK_INT >= Build.VERSION_CODES.M) {
-            int permissionReadPhoneState = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
-            int permissionStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-            List<String> listPermissionsNeeded = new ArrayList<>();
-
-            if (permissionReadPhoneState != PackageManager.PERMISSION_GRANTED) {
-                listPermissionsNeeded.add(Manifest.permission.READ_PHONE_STATE);
-            }
-
-            if (permissionStorage != PackageManager.PERMISSION_GRANTED) {
-                listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-            }
-
-            if (!listPermissionsNeeded.isEmpty()) {
-                ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_ID_MULTIPLE_PERMISSIONS);
-                return false;
-            } else {
-                return true;
-            }
-        }
-        return false;
+        //mPlayer = MediaPlayer.create(this, R.raw.heal2);
     }
 
     public void toast(String s) {
         Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onClick(View v) {
-        ToggleButton playpause = (ToggleButton) findViewById(R.id.playButton);
-        switch (v.getId()) {
-            case R.id.playButton:
-                if (playpause.isChecked()) {
-                    toast("PLAYING");
-
-                }
-                else{
-                    toast("PAUSING");
-
-                }
-                break;
-            case R.id.nextButton:
-                toast("NEXT");
-
-                break;
-            case R.id.previousButton:
-                toast("PREVIOUS");
-                break;
-            case R.id.rangeButton:
-                toast("RANGE");
-                break;
-            default:
-                break;
-        }
     }
 
     @Override
@@ -161,46 +79,35 @@ public class MainActivity extends AppCompatActivity
             startService(playIntent);
             Log.d("BLAH", "returned to onStart from startService");
         }*/
+        mPlayer = MediaPlayer.create(this, R.raw.heal2);
+        TextView rangeText = (TextView)findViewById(R.id.rangeButton);
+        rangeText.setText(targetRange[0] + "-" + targetRange[1] + " BPM");
     }
 
-    //Binding this Client to the AudioPlayer Service
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            MediaPlayerService.LocalBinder binder = (MediaPlayerService.LocalBinder) service;
-            player = binder.getService();
-            serviceBound = true;
+    @Override
+    public void onClick(View v) {
+        ToggleButton playpause = findViewById(R.id.playButton);
+        switch (v.getId()) {
+            case R.id.playButton:
+                if (playpause.isChecked()) {
+                    toast("PLAYING");
+                    mPlayer.start(); }
+                else{
+                    toast("PAUSING");
+                    mPlayer.pause(); }
+                break;
+            case R.id.nextButton:
+                toast("NEXT");
+                break;
+            case R.id.previousButton:
+                toast("PREVIOUS");
+                break;
+            case R.id.rangeButton:
+                toast("RANGE");
 
-            Toast.makeText(MainActivity.this, "Service Bound", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            serviceBound = false;
-        }
-    };
-
-    private void playAudio(int audioIndex) {
-        //Check is service is active
-        if (!serviceBound) {
-            //Store Serializable audioList to SharedPreferences
-            StorageUtil storage = new StorageUtil(getApplicationContext());
-            storage.storeAudio(songList);
-            storage.storeAudioIndex(audioIndex);
-
-            Intent playerIntent = new Intent(this, MediaPlayerService.class);
-            startService(playerIntent);
-            bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-        } else {
-            //Store the new audioIndex to SharedPreferences
-            StorageUtil storage = new StorageUtil(getApplicationContext());
-            storage.storeAudioIndex(audioIndex);
-
-            //Service is active
-            //Send a broadcast to the service -> PLAY_NEW_AUDIO
-            Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-            sendBroadcast(broadcastIntent);
+                break;
+            default:
+                break;
         }
     }
 
@@ -237,7 +144,6 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -259,14 +165,13 @@ public class MainActivity extends AppCompatActivity
             toast("ABOUT");
             Intent intent = new Intent(this, About.class);
             startActivity(intent);
-
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    /*
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean("ServiceState", serviceBound);
@@ -278,22 +183,14 @@ public class MainActivity extends AppCompatActivity
         super.onRestoreInstanceState(savedInstanceState);
         serviceBound = savedInstanceState.getBoolean("ServiceState");
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (serviceBound) {
-            unbindService(serviceConnection);
-            //service is active
-            player.stopSelf();
-        }
-    }
+    */
 
     /*public void listItemSelected(View view){
         musicServ.setSong(Integer.parseInt(view.getTag().toString()));
         musicServ.playSong();
     }*/
 
+    /*
     private void loadAudio() {
         ContentResolver contentResolver = getContentResolver();
 
@@ -315,6 +212,5 @@ public class MainActivity extends AppCompatActivity
             }
         }
         cursor.close();
-    }
-
+    }*/
 }
