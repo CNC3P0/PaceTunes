@@ -1,5 +1,6 @@
 package com.example.robert.pacetunes;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -17,8 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import java.util.ArrayList;
-
 import static android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 
 public class MainActivity extends AppCompatActivity
@@ -30,7 +29,8 @@ public class MainActivity extends AppCompatActivity
     MediaPlayer mPlayer;
 
     boolean playState = false;
-    ArrayList<Song> currentPlaylist;
+    //ArrayList<Song> currentPlaylist;
+    PlayList currentPlaylist;
     Song currentSong;
     boolean loopState;
     boolean sprintState;
@@ -79,6 +79,8 @@ public class MainActivity extends AppCompatActivity
             startService(playIntent);
             Log.d("BLAH", "returned to onStart from startService");
         }*/
+
+        //currentPlaylist = ;
         mPlayer = MediaPlayer.create(this, R.raw.heal2);
         TextView rangeText = (TextView)findViewById(R.id.rangeButton);
         rangeText.setText(targetRange[0] + "-" + targetRange[1] + " BPM");
@@ -152,7 +154,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_loadPL) {
             toast("LOAD");
             Intent intent = new Intent(this, LoadPlaylist.class);
-            startActivity(intent);
+            startActivityForResult(intent, 1);
         } else if (id == R.id.nav_loopmode) {
             toast("LOOP");
         } else if (id == R.id.nav_sprintmode) {
@@ -169,6 +171,20 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                currentPlaylist = (PlayList) data.getSerializableExtra("result");
+                Toast.makeText(getApplicationContext(), currentPlaylist.getPlaylistName(), Toast.LENGTH_SHORT).show();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
     }
 
     /*

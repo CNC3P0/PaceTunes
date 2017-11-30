@@ -1,76 +1,36 @@
 package com.example.robert.pacetunes;
 
-import java.io.File;
-import java.util.Map;
+import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by Robert on 11/25/2017.
  */
 
-public class PlayList {
-    private Map<String, File> playListMap;
+public class PlayList implements Serializable {
+        private String playlistName;
+        private String playlistPath;
+        private ArrayList<String> songTitles;
+        private ArrayList<String> songPaths;
 
-    //public ArrayList getPlayList() {    }
-
-    //public void createPlayList() {    }
-
-    /*public ArrayList<String> getPlayList() {
-
-        ArrayList<String> arrayList=new ArrayList<String>();
-
-        String[] proj = {"*"};
-        Uri tempPlaylistURI = MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
-
-        // In the next line 'this' points to current Activity.
-        // If you want to use the same code in other java file then activity,
-        // then use an instance of any activity in place of 'this'.
-
-        Cursor playListCursor = PlayList.getContentResolver().query(contentUri, proj, null, null, null);
-
-//                = PlayList.managedQuery(tempPlaylistURI, proj, null,null,null);
-
-        if(playListCursor == null){
-            System.out.println("Not having any Playlist on phone --------------");
-            return arrayList;//don't have list on phone
+        public PlayList(String playlistName, String playlistPath) {
+            this.playlistName = playlistName;
+            this.playlistPath = playlistPath;
+            this.songTitles = songTitles;
+            this.songPaths = songPaths;
         }
 
-        System.gc();
+        public String getPlaylistName() {return playlistName;}
+        public void setPlaylistName(String playlistName) {this.playlistName = playlistName;}
 
-        String playListName = null;
+        public String getPlaylistPath() { return playlistPath; }
+        public void setPlaylistPath(String playlistName) {this.playlistName = playlistName;}
 
-        System.out.println(">>>>>>>  CREATING AND DISPLAYING LIST OF ALL CREATED PLAYLIST  <<<<<<");
+        public ArrayList getSongTitles() {return songTitles;}
+        public void setSongTitles() {this.songTitles = songTitles;}
 
-        for(int i = 0; i <playListCursor.getCount() ; i++)
-        {
-            playListCursor.moveToPosition(i);
-            playListName = playListCursor.getString(playListCursor.getColumnIndex("name"));
-            System.out.println("> " + i + "  : " + playListName );
-            arrayList.add(playListName);
-        }
+        public ArrayList getSongPaths() {return songPaths; }
+        public void setSongPaths() {this.songPaths = songPaths;}
 
-        if(playListCursor != null)
-            playListCursor.close();
-
-        return arrayList;
-
-
-
+        public String getSongPath(int index) {return songPaths.get(index);}
     }
-
-
-    //File f = new File(Environment.getExternalStorageDirectory().toString());
-
-    /*Log.("SERVICE", "onBackPressed");
-
-    if(f.isDirectory())
-    {
-        ArrayList<String> files= new ArrayList<String>();
-        File file = new File(Environment.getExternalStorageDirectory() +"/"+ dirname+"/");
-        File fileList[] = file.listFiles();
-        for(int i=0;i<fileList.length;i++)
-        {
-            files.add(filelist[i].getAbsolutePath());
-            //here you can get all files.
-        }
-    }*/
-}

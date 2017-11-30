@@ -1,16 +1,18 @@
 package com.example.robert.pacetunes;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,7 +25,8 @@ public class LoadPlaylist extends AppCompatActivity {
 
     private static final int MY_PERMISSION_REQUEST = 1;
 
-    ArrayList<String> arrayList;
+    ArrayList<PlayList> playlistArray;
+    ArrayList<String> adapterArray;
 
     ListView listView;
 
@@ -65,28 +68,56 @@ public class LoadPlaylist extends AppCompatActivity {
 
             do {
                 String currentName = playlistCursor.getString(playlistName);
-                //String currentLocation = playlistCursor.getString(playlistLocation);
-                arrayList.add(currentName);
+                String currentLocation = playlistCursor.getString(playlistLocation);
+                PlayList playList = new PlayList(currentName, currentLocation);
+                playlistArray.add(playList);
+                adapterArray.add(currentName);
             }
             while (playlistCursor.moveToNext());
         }
     }
 
+    //public PlayList loadSongs(PlayList playList) {
+
+    public Cursor loadSongs(Context context, Long playlist_id) {
+        Uri newuri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlist_id);
+        ContentResolver resolver = context.getContentResolver();
+        String _id = MediaStore.Audio.Playlists.Members._ID;
+        String audio_id = MediaStore.Audio.Playlists.Members.AUDIO_ID;
+        String artist = MediaStore.Audio.Playlists.Members.ARTIST;
+        String album = MediaStore.Audio.Playlists.Members.ALBUM;
+        String album_id = MediaStore.Audio.Playlists.Members.ALBUM_ID;
+        String title = MediaStore.Audio.Playlists.Members.TITLE;
+        String duration = MediaStore.Audio.Playlists.Members.DURATION;
+        String location = MediaStore.Audio.Playlists.Members.DATA;
+        String composer = MediaStore.Audio.Playlists.Members.COMPOSER;
+        String playorder = MediaStore.Audio.Playlists.Members.PLAY_ORDER;
+
+        String date_modified = MediaStore.Audio.Playlists.Members.DATE_MODIFIED;
+        String[] columns = {_id, audio_id, artist, album_id, album, title, duration,
+                location, date_modified, playorder, composer};
+        return resolver.query(newuri, columns, null, null, null);
+    }
+
     public void doStuff() {
         listView = findViewById(R.id.playlistView);
-        arrayList = new ArrayList<>();
-        //getMusic();
+        playlistArray = new ArrayList<PlayList>();
+        adapterArray = new ArrayList<String>();
+
         getPlaylists();
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayList);
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, adapterArray);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // open music player or load song here
-                String songPath = (String)parent.getItemAtPosition(position);
-                //Toast.makeText(getApplicationContext(), songPath, Toast.LENGTH_SHORT).show();
-                //playSongHere.playSong(songPath);
+                //loadSongs(LoadPlaylist.this ,  MediaStore.Audio.Playlists.Members.playlistId());
+                //String playlistPath = playlistArray.get(position).getPlaylistPath();
+                //Toast.makeText(getApplicationContext(), playlistPath, Toast.LENGTH_SHORT).show();
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("result", playlistArray.get(position));
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
             }
         });
     }
