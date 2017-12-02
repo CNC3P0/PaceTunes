@@ -2,7 +2,7 @@
 PaceTunes is an Android music player app for runners. The feature that makes it unique and useful is active timeshifting of the music to match a selected BPM range. It is still in development and does not yet provide its target functions.
 
 ## User Requirements:
-  - Android device running minimum SDK of 
+  - Android device running minimum SDK of 21
   - Your own songs, properly tagged with a BPM (beats per minute) and copied to your device
   - Your own playlists, properly formatted and copied to your device
   
